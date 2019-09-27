@@ -99,3 +99,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+recipes/timit_v2/data
+recipes/timit_v2/exp
+recipes/aud/data
+recipes/aud/exp
