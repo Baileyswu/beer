@@ -14,7 +14,7 @@ set -e
 #rootdir=/export/corpora5/LDC/LDC93S1/timit/TIMIT
 
 # BUT
-rootdir=/mnt/matylda2/data/TIMIT/timit
+rootdir=/home/danliwoo/gplab/dataset/timit
 
 
 if [ $# -ne 1 ]; then

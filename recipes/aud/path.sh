@@ -1,6 +1,6 @@
 ########################################################################
 # Set the virtual environment in which BEER is installed.
-source activate beer
+# source activate beer
 
 
 #######################################################################

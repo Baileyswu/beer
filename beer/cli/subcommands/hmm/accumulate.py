@@ -17,6 +17,7 @@ def setup(parser):
                         help='scaling factor of the acoutsic model')
     parser.add_argument('model', help='hmm based model')
     parser.add_argument('dataset', help='training data set')
+    parser.add_argument('uttid', help='uttid')
     parser.add_argument('out', help='output accumulated ELBO')
 
 
@@ -36,7 +37,14 @@ def main(args, logger):
 
     elbo = beer.evidence_lower_bound(datasize=dataset.size)
     count = 0
-    for line in sys.stdin:
+
+    if args.uttid == '-':
+        infile = sys.stdin
+    else:
+        with open(args.uttid, 'r') as f:
+            infile = f.readlines()
+
+    for line in infile:
         uttid = line.strip().split()[0]
 
         try:
