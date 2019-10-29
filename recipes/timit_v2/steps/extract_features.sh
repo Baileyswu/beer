@@ -28,15 +28,18 @@ if [ ! -f "$datadir"/${fea_type}.npz ]; then
 
     tmpdir=$(mktemp -d "$datadir"/beer.XXXX);
     trap 'rm -rf "$tmpdir"' EXIT
-    utils/parallel/submit_parallel.sh \
-        "$parallel_env" \
-        "extract-$fea_type-features" \
-        "$fea_parallel_opts" \
-        $fea_njobs \
-        $scp \
-        "python utils/features-extract-parallel.py $fea_conf $tmpdir" \
-        $datadir || exit 1
-
+    if [ $parallel_env == "null" ]; then
+        python utils/features-extract-parallel.py $fea_conf $scp $tmpdir
+    else
+        utils/parallel/submit_parallel.sh \
+            "$parallel_env" \
+            "extract-$fea_type-features" \
+            "$fea_parallel_opts" \
+            $fea_njobs \
+            $scp \
+            "python utils/features-extract-parallel.py $fea_conf - $tmpdir" \
+            $datadir || exit 1
+    fi
     # Create the "npz" archives.
     find "$tmpdir" -name '*npy' | zip -j -@ \
         "$datadir"/${fea_type}.npz > /dev/null

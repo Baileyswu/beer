@@ -2,7 +2,7 @@
 
 parallel_env=sge
 parallel_opts=""
-parallel_njobs=4
+parallel_njobs=400
 nargs=3
 
 while [[ $# -gt $nargs ]]; do
@@ -56,22 +56,28 @@ mkdir -p $feadir
 
 
 if [ ! -f $feadir/${feaname}.npz ]; then
-    echo "extracting features in $feadir/${feaname}.npz"
+    echo "  --> extracting features in $feadir/${feaname}.npz"
 
     mkdir -p $feadir/${feaname}_tmp
 
-    # Extract the features.
-    cmd="beer features extract $conf - $feadir/${feaname}_tmp"
-    utils/parallel/submit_parallel.sh \
-        "$parallel_env" \
-        "extract-features" \
-        "$parallel_opts" \
-        "$parallel_njobs" \
-        "$scp" \
-        "$cmd" \
-        $feadir || exit 1
+    if [ $parallel_env == "null" ]; then
+        echo "  -->" single pc
+        beer features extract $conf $scp $feadir/${feaname}_tmp
+    else
+        # Extract the features.
+        cmd="beer features extract $conf - $feadir/${feaname}_tmp"
+        echo "  -->" $cmd
+        utils/parallel/submit_parallel.sh \
+            "$parallel_env" \
+            "extract-features" \
+            "$parallel_opts" \
+            "$parallel_njobs" \
+            "$scp" \
+            "$cmd" \
+            $feadir || exit 1
+    fi
 
-    # Put all the features files into a single archive.
+    echo "  -->" Put all the features files into a single archive.
     beer features archive $feadir/${feaname}_tmp $feadir/${feaname}.npz
 
     # We don't need the original features anymore as they are stored in

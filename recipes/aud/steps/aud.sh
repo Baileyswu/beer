@@ -105,19 +105,25 @@ if [ ! -f $outdir/final.mdl ] || [ ! -f $outdir/${epochs}.mdl ]; then
 
     while [ $((++epoch)) -le $epochs ]; do
         echo "epoch: $epoch"
-
-        # Accumulate the statistics in parallel.
-        cmd="beer -s $seed  hmm accumulate -s $acoustic_scale \
-             $outdir/$mdl $dataset \
-             $outdir/epoch${epoch}/elbo_JOBID.pkl"
-        utils/parallel/submit_parallel.sh \
-            "$parallel_env" \
-            "hmm-acc" \
-            "$parallel_opts" \
-            "$parallel_njobs" \
-            "$datadir/uttids" \
-            "$cmd" \
-            $outdir/epoch${epoch}|| exit 1
+        if [ $parallel_env == "null" ]; then
+            mkdir -p $outdir/epoch${epoch}
+            beer -s $seed  hmm accumulate -s $acoustic_scale \
+                $outdir/$mdl $dataset $datadir/uttids \
+                $outdir/epoch${epoch}/elbo.pkl
+        else
+            # Accumulate the statistics in parallel.
+            cmd="beer -s $seed  hmm accumulate -s $acoustic_scale \
+                $outdir/$mdl $dataset - \
+                $outdir/epoch${epoch}/elbo_JOBID.pkl"
+            utils/parallel/submit_parallel.sh \
+                "$parallel_env" \
+                "hmm-acc" \
+                "$parallel_opts" \
+                "$parallel_njobs" \
+                "$datadir/uttids" \
+                "$cmd" \
+                $outdir/epoch${epoch}|| exit 1
+        fi
 
         # Update the model' parameters.
         find $outdir/epoch${epoch} -name '*pkl' | \

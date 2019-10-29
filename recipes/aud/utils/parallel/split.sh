@@ -15,9 +15,10 @@ mkdir -p $split_dir
 
 
 nsuff=${#n_split}
-cp $list $split_dir/list
+echo "      -->" cp $list $split_dir/list 
+cp $list $split_dir/list 
 pushd $split_dir > /dev/null
-split --numeric-suffixes=1 -a $nsuff -n l/$n_split ./list
-rm list
+    split --numeric-suffixes=1 -a $nsuff -n l/$n_split ./list
+    rm list
 popd > /dev/null
 

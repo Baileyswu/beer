@@ -64,19 +64,23 @@ mkdir -p $outdir
 
 if [ ! -f $outdir/trans ]; then
     echo "decoding $dataset dataset..."
+    if [ $parallel_env == "null" ]; then
+        beer hmm decode $per_frame -s $acoustic_scale --utts $uttids \
+            $model $dataset >$outdir/trans
+    else
+        cmd="beer hmm decode $per_frame -s $acoustic_scale --utts - \
+            $model $dataset >$outdir/trans_JOBID"
+        utils/parallel/submit_parallel.sh \
+            "$parallel_env" \
+            "hmm-decode" \
+            "$parallel_opts" \
+            "$parallel_njobs" \
+            "$uttids" \
+            "$cmd" \
+            $outdir || exit 1
 
-    cmd="beer hmm decode $per_frame -s $acoustic_scale --utts - \
-         $model $dataset >$outdir/trans_JOBID"
-    utils/parallel/submit_parallel.sh \
-        "$parallel_env" \
-        "hmm-decode" \
-        "$parallel_opts" \
-        "$parallel_njobs" \
-        "$uttids" \
-        "$cmd" \
-        $outdir || exit 1
-
-    cat $outdir/trans_* | sort > $outdir/trans || exit 1
+        cat $outdir/trans_* | sort > $outdir/trans || exit 1
+    fi
 else
     echo "Data already decoded. Skipping."
 fi

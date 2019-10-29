@@ -6,17 +6,18 @@ set -e
 ########################################################################
 ## SETUP
 
+## DATA
+db=mboshi
+train=train
+
 ## DIRECTORY STRUCTURE
 datadir=data
-feadir=/mnt/scratch04/tmp/iondel/features
+feadir=features
 expdir=exp_dp
-
-## DATA
-db=timit
-train=full
+subset=subset
 
 ## FEATURES
-feaname=mbn
+feaname=mfcc
 
 ## AUD MODEL
 
@@ -68,7 +69,7 @@ python utils/prepare_lang_aud.py \
 
 
 echo "--> Extracting features for the $db/$train database"
-steps/extract_features.sh conf/${feaname}.yml $datadir/$db/$train \
+steps/extract_features.sh --parallel-env null conf/${feaname}.yml $datadir/$db/$train/wav.scp \
      $feadir/$db/$train
 
 # Create a "dataset". This "dataset" is just an object
@@ -85,6 +86,7 @@ steps/create_dataset.sh $datadir/$db/$train \
 # enviroment please see utils/parallel/sge/* to see how to adapt
 # this recipe to you system.
 steps/aud.sh \
+    --parallel-env null \
     --prior $prior \
     --parallel-opts "-l mem_free=1G,ram_free=1G" \
     --parallel-njobs 30 \
@@ -99,12 +101,13 @@ outdir=$expdir/$db/$subset/aud_${feaname}_${ngauss}g_${prior}/decode_perframe/$t
 
 echo "--> Decoding $db/$train dataset"
 steps/decode.sh \
+    --parallel-env null \
     --per-frame \
     --parallel-opts "-l mem_free=1G,ram_free=1G" \
     --parallel-njobs 30 \
     $expdir/$db/$subset/aud_${feaname}_${ngauss}g_${prior}/final.mdl \
-    data/$db/$subset/$train \
-    $expdir/$db/$subset/datasets/$feaname/${train}.pkl \
+    data/$db/$train/uttids \
+    $expdir/$db/datasets/$feaname/${train}.pkl \
     $outdir
 
 

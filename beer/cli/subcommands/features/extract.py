@@ -2,7 +2,6 @@
 
 
 import argparse
-import beer
 import io
 import os
 import subprocess
@@ -12,6 +11,7 @@ import yaml
 import numpy as np
 from scipy.io.wavfile import read
 
+import beer
 
 feaconf = {
     'srate': 16000,
@@ -49,7 +49,7 @@ class ShowDefaultsAction(argparse.Action):
 
 
 def setup(parser):
-    parser.add_argument('--show-default-conf', action=ShowDefaultsAction,
+    parser.add_argument('--show-default-conf', '-s', action=ShowDefaultsAction,
                         help='show the default configuration and exit')
     parser.add_argument('feaconf', help='configuration file of the '
                                         'features')

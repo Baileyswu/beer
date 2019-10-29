@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Sumbit a set of tasks on the the selected environment (local/sge).
 
@@ -18,10 +18,11 @@ outdir=$7
 
 mkdir -p $outdir/{split,log}
 
-# Split the list into "njobs" sub lists.
+echo "    -->" Split the list into "njobs" sub lists.
 utils/parallel/split.sh $list $njobs $outdir/split
 
-# Submit the jobs
+echo "    -->" Submit the jobs
+echo utils/parallel/$parallel_env/parallel.sh ";" $name ";" $opts ";" $outdir/split ";" $cmd ";" $outdir/log 2">&1" ">" $outdir/log/parallel.log
 utils/parallel/$parallel_env/parallel.sh $name "$opts" $outdir/split "$cmd" \
     $outdir/log 2>&1 > $outdir/log/parallel.log
 

@@ -9,6 +9,8 @@ import yaml
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s')
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def parse_topology(topology):
@@ -17,6 +19,7 @@ def parse_topology(topology):
         start = arc_conf['start_id']
         end = arc_conf['end_id']
         weight = arc_conf['trans_prob']
+        logger.debug(f'{start}-{end}, {weight}')
         arcs.append((start, end, weight))
     return arcs
 
@@ -143,6 +146,7 @@ def main():
     units = {}
     emissions = []
     for group in conf:
+        logger.debug(group)
 
         # Create the unit graphs.
         for i in range(group['n_units']):

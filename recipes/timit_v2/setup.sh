@@ -15,6 +15,9 @@ elif [[ "$hostname" = *"clsp.jhu.edu" ]]; then
     parallel_env=sge
     parallel_opts="-l mem_free=200M,ram_free=200M,hostname=b*|c*"
     parallel_opts_gpu="-l gpu=1,mem_free=1G,ram_free=1G,hostname=b1[123456789]*|c*"
+elif [[ "$hostname" == *"psdz-SYS-4028GR-TR" ]]; then
+    timit=/home/data/TIMIT
+    parallel_env=null
 else
     echo "Unkown location configuration. Please update the"
     echo "\"setup.sh\" file."
@@ -34,9 +37,10 @@ expdir=$(pwd)/exp
 #######################################################################
 # Features extraction.
 
+features=mfcc
 fea_njobs=10
 fea_parallel_opts="$parallel_opts"
-fea_conf=$confdir/features.yml
+fea_conf=$confdir/$features.yml
 
 
 #######################################################################
@@ -116,7 +120,6 @@ aud_vae_hmm_encoder_conf=$aud_vae_hmm_confdir/encoder.yml
 aud_vae_hmm_decoder_conf=$aud_vae_hmm_confdir/decoder.yml
 aud_vae_hmm_nflow_conf=$aud_vae_hmm_confdir/normalizing_flow.yml
 aud_vae_hmm_hmm_conf=$aud_vae_hmm_confdir/hmm.yml
-aud_vae_hmm_fea_type=logspec
 aud_vae_hmm_nnet_width=128
 aud_vae_hmm_latent_dim=30
 aud_vae_hmm_encoder_cov_type=isotropic

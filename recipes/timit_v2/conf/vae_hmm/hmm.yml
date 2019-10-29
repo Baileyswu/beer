@@ -7,6 +7,7 @@
   cov_type: diagonal
   shared_cov: no
   shared_emissions: false
+  emission_type: GMM
   topology:
   - {start_id: 0, end_id: 1, trans_prob: 1.0}
 
@@ -42,6 +43,7 @@
   cov_type: diagonal
   shared_cov: no
   shared_emissions: false
+  emission_type: GMM
   topology:
   - {start_id: 0, end_id: 1, trans_prob: 1.0}
   - {start_id: 1, end_id: 1, trans_prob: 0.75}

@@ -14,7 +14,7 @@ setup=$(pwd)/$1
 
 # Set the stage you want to start from. Keep in mind that some steps
 # depends on previous ones !!
-stage=6
+stage=3
 
 
 # Data preparation. Organize the data directory as:
@@ -66,16 +66,16 @@ fi
 #fi
 #
 #
-## VAE-HMM monophone system. We use the alignment of the HMM system
-## to initialize the model.
-#if [ $stage -le 3 ]; then
-#    echo "--> VAE-HMM system"
-#    steps/train_vae_hmm.sh $setup $hmm_dir/alis.npz \
-#        $datadir/train $vae_hmm_dir || exit 1
-#
-#    steps/decode_vae_hmm.sh $setup $vae_hmm_dir $datadir/test \
-#        $vae_hmm_dir/decode || exit 1
-#fi
+# VAE-HMM monophone system. We use the alignment of the HMM system
+# to initialize the model.
+if [ $stage -le 3 ]; then
+   echo "--> VAE-HMM system"
+   steps/train_vae_hmm.sh $setup $hmm_dir/alis.npz \
+       $datadir/train $vae_hmm_dir || exit 1
+
+   steps/decode_vae_hmm.sh $setup $vae_hmm_dir $datadir/test \
+       $vae_hmm_dir/decode || exit 1
+fi
 
 
 # Score all the models.

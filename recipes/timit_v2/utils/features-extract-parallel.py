@@ -53,6 +53,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('feaconf', help='configuration file of the '
                                         'features')
+    parser.add_argument('scp', help='scp list including uttid and wav')
     parser.add_argument('outdir', help='output directory')
     args = parser.parse_args()
 
@@ -70,7 +71,13 @@ def main():
     # Pre-compute the DCT bases.
     dct_bases = compute_dct_bases(feaconf['nfilters'], feaconf['n_dct_coeff'])
 
-    for line in sys.stdin:
+    if args.scp == '-':
+        infile = sys.stdin
+    else:
+        with open(args.scp, 'r') as f:
+            infile = f.readlines()
+
+    for line in infile:
         tokens = line.strip().split()
         uttid, inwav = tokens[0], ' '.join(tokens[1:])
 

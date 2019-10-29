@@ -12,6 +12,7 @@ setup=$1
 init_ali=$2
 data_train_dir=$3
 mdl_dir=$4
+feats=mfcc
 mkdir -p $mdl_dir
 
 
@@ -29,25 +30,25 @@ mkdir -p $mdl_dir
 if [ ! -f $mdl_dir/0.mdl ]; then
     echo "Building the VAE-HMM model..."
 
-    # Copy the configuration files for information.
+    echo "  --> Copy the configuration files for information."
     cp $setup $mdl_dir
-    cp $fea_conf $mdl_dir
+    cp $confdir/$feats.yml $mdl_dir
     cp $vae_hmm_hmm_conf $mdl_dir
     cp $vae_hmm_encoder_conf $mdl_dir
     cp $vae_hmm_decoder_conf $mdl_dir
     cp $vae_hmm_nflow_conf $mdl_dir
 
-    # Get the dimension of the data.
+    echo "  --> Get the dimension of the data."
     pycmd="import numpy as np; \
-    utts = np.load('$data_train_dir/feats.npz'); \
+    utts = np.load('$data_train_dir/$feats.npz'); \
     print(utts[utts.files[0]].shape[1])"
     feadim=$(python -c "$pycmd")
 
-    # Build the decoding graph.
+    echo "  --> Build the decoding graph."
     python utils/prepare-decode-graph.py \
         $langdir/phone_graph.txt $mdl_dir/decode.graph || exit 1
 
-    # Create the phones' hmm graph and their respective emissions.
+    echo "  --> Create the phones' hmm graph and their respective emissions."
     python utils/hmm-create-graph-and-emissions.py \
         --dim $vae_hmm_latent_dim \
          $vae_hmm_hmm_conf \
@@ -55,18 +56,18 @@ if [ ! -f $mdl_dir/0.mdl ]; then
          $mdl_dir/phones_hmm.graphs \
          $mdl_dir/emissions.mdl || exit 1
 
-    # Create the pdf to phone mapping (used for decoding).
+    echo "  --> Create the pdf to phone mapping (used for decoding)."
     python utils/hmm-pdf-id-mapping.py $mdl_dir/phones_hmm.graphs \
         > $mdl_dir/pdf_mapping.txt
 
-    # Create the HMM model.
+    echo "  --> Create the HMM model."
     python utils/hmm-create.py \
         $mdl_dir/decode.graph \
         $mdl_dir/phones_hmm.graphs \
         $mdl_dir/emissions.mdl \
         $mdl_dir/latent_model.mdl || exit 1
 
-    # Create the VAE.
+    echo "  --> Create the VAE."
     vars="dim_in=$feadim,dim_out=$vae_hmm_nnet_width"
     python utils/nnet-create.py \
         --set "$vars" \
@@ -88,7 +89,7 @@ if [ ! -f $mdl_dir/0.mdl ]; then
     python utils/vae-hmm-create.py \
         --encoder-cov-type $vae_hmm_encoder_cov_type \
         --decoder-cov-type $vae_hmm_decoder_cov_type \
-        $data_train_dir/feats.stats.npz \
+        $data_train_dir/$feats.stats.npz \
         $vae_hmm_nnet_width \
         $vae_hmm_latent_dim \
         $mdl_dir/encoder.mdl \
@@ -154,7 +155,7 @@ if [ ! -f $mdl_dir/final.mdl ];then
             tmpdir=$(mktemp -d $mdl_dir/tmp.XXXX);
             cmd="python utils/vae-hmm-align.py \
                 --ali-graphs $mdl_dir/ali_graphs.npz \
-                $mdl_dir/$mdl  $data_train_dir/feats.npz  $tmpdir"
+                $mdl_dir/$mdl  $data_train_dir/$feats.npz  $tmpdir"
             utils/parallel/submit_parallel.sh \
                 "$parallel_env" \
                 "vae-align" \
