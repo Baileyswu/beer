@@ -179,9 +179,9 @@ def evidence_lower_bound(model=None, minibatch_data=None, datasize=-1,
         datasize = mb_datasize
     scale = datasize / float(mb_datasize)
     stats = model.sufficient_statistics(minibatch_data)
-    exp_llh = model.expected_log_likelihood(stats, **kwargs)
+    expect_llh = model.expected_log_likelihood(stats, **kwargs)
     kl_div = model.kl_div_posterior_prior().sum()
-    elbo_value = float(scale) * exp_llh.sum() - kl_div
+    elbo_value = float(scale) * expect_llh.sum() - kl_div
     acc_stats = model.accumulate(stats)
     model.clear_cache()
 
