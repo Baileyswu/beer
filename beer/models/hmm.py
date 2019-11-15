@@ -77,7 +77,7 @@ class HMM(DiscreteLatentModel):
         if inference_graph is None:
             inference_graph = self.graph
         pc_llhs = scale * self._pc_llhs(stats, inference_graph)
-        all_resps, llh = self._inference(pc_llhs, inference_graph, viterbi=viterbi,
+        all_resps, llh = self._inference(pc_llhs.detach(), inference_graph, viterbi=viterbi,
                                          state_path=state_path,
                                          trans_posteriors=trans_posts)
         if trans_posts:

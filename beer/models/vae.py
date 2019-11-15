@@ -46,8 +46,9 @@ class VAE(Model):
     
     def pdfs(self, Z):
         'Return the normal densities given the latent variable Z'
+        Z1 = self.decoder(Z)
         return NormalDiagonalCovariance(
-            MeanLogDiagCov(self.dec_mean_layer(Z), self.dec_var_layer(Z))
+            MeanLogDiagCov(self.dec_mean_layer(Z1), self.dec_var_layer(Z1))
         )
     
     ####################################################################
