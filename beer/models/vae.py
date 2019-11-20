@@ -54,6 +54,10 @@ class VAE(Model):
     ####################################################################
     # Model interface.
 
+    def normalloss(self, X):
+        H = self.encoder(X)
+        return torch.nn.functional.normalize(self.enc_var_layer(H))
+
     def mean_field_factorization(self):
         return self.prior.mean_field_factorization()
 
@@ -83,7 +87,7 @@ class VAE(Model):
         llh = pdfs(pdfs.sufficient_statistics(r_data), pdfwise=True)
         llh = llh.reshape(len(data), nsamples, -1).mean(dim=1)
         
-        return llh_weight * llh - kl_weight * local_kl_div
+        return llh_weight * llh - kl_weight * local_kl_div + self.normalloss(data).mean()
 
     def accumulate(self, stats, parent_msg=None):
         return self.prior.accumulate(self.cache['prior_stats'])
