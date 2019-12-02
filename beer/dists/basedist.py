@@ -268,5 +268,5 @@ def entropy(pdf):
     nparams = pdf.natural_parameters()
     exp_stats = pdf.expected_sufficient_statistics()
     lnorm = pdf.log_norm()
-    return torch.sum(exp_stats * nparams1, dim=-1) - lnorm
+    return torch.sum(exp_stats * nparams, dim=-1) - lnorm
 

@@ -55,6 +55,10 @@ def plot_hmm(fig, hmm, n_std_dev=2, npoints=100, colors=None, **kwargs):
     for comp, color in zip(hmm.modelset, colors):
         if color is not None:
             kwargs['color'] = color
-        plot_normal(fig, comp.mean.numpy(), comp.cov.numpy(),
-                    n_std_dev, npoints, **kwargs)
+        mean = comp.mean
+        cov = comp.cov
+        if mean.device.type != 'cpu':
+            mean = mean.clone().cpu()
+            cov = cov.clone().cpu()
+        plot_normal(fig, mean.numpy(), cov.numpy(), n_std_dev, npoints, **kwargs)
         

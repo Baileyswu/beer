@@ -341,5 +341,5 @@ class CompiledGraph(torch.nn.Module):
         path = [torch.argmax(omega + self.final_log_probs)]
         for i in reversed(range(1, len(llhs))):
             path.insert(0, backtrack[i, path[0]])
-        return torch.LongTensor(path, device=llhs.device)
+        return path
 
