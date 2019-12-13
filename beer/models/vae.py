@@ -34,6 +34,7 @@ class VAE(Model):
         self.decoder = decoder
         self.enc_mean_layer = torch.nn.Linear(encoder.dim_out, decoder.dim_in)
         self.enc_var_layer = torch.nn.Linear(encoder.dim_out, decoder.dim_in)
+        torch.nn.init.zeros_(self.enc_var_layer.weight)
         self.dec_mean_layer = torch.nn.Linear(decoder.dim_out, encoder.dim_in)
         self.dec_var_layer = torch.nn.Linear(decoder.dim_out, encoder.dim_in)
          
@@ -46,9 +47,9 @@ class VAE(Model):
     
     def pdfs(self, Z):
         'Return the normal densities given the latent variable Z'
-        Z1 = self.decoder(Z)
+        X = self.decoder(Z)
         return NormalDiagonalCovariance(
-            MeanLogDiagCov(self.dec_mean_layer(Z1), self.dec_var_layer(Z1))
+            MeanLogDiagCov(self.dec_mean_layer(X), self.dec_var_layer(X))
         )
     
     ####################################################################
