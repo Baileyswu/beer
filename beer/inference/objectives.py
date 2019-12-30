@@ -181,7 +181,7 @@ def evidence_lower_bound(model=None, minibatch_data=None, datasize=-1,
     stats = model.sufficient_statistics(minibatch_data)
     expect_llh = model.expected_log_likelihood(stats, **kwargs)
     kl_div = model.kl_div_posterior_prior().sum()
-    elbo_value = float(scale) * expect_llh.sum() - kl_div
+    elbo_value = float(scale) * expect_llh.sum() - kl_div  # *beta
     acc_stats = model.accumulate(stats)
     model.clear_cache()
 
