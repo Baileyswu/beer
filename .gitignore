@@ -103,6 +103,7 @@ ENV/
 recipes/timit_v2/data
 recipes/timit_v2/exp
 recipes/aud/data
-recipes/aud/exp
+recipes/aud/exp_dp
+recipes/aud/features
 
 *.pkl

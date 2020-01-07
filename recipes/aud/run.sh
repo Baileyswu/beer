@@ -113,7 +113,7 @@ steps/decode.sh \
 
 echo "--> Scoring $db/$train dataset"
 steps/score_aud.sh \
-    data/$db/$subset/$train/ali \
+    data/$db/$train/ali \
     $outdir/trans \
     $outdir/score
 

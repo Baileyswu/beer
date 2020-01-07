@@ -39,14 +39,14 @@ mkdir -p $outdir
 if [ ! -f $oudir/au_phone_counts.yml ]; then
     echo "creating a mapping acoustic unit -> phone"
     python utils/maxoverlap_mapping.py $ref_ali $hyp_ali \
-        --counts $outdir/au_phone_counts.yml $outdir/au_phone
+        --counts $outdir/au_phone_counts.yml $outdir/au_phone || exit 1
     au_mapping=$outdir/au_phone
 fi
 
 if [ ! -f $outdir/eq_per ]; then
    echo "mapping the acoustic unit to phones"
    python utils/maptrans.py --unk '<unk>' $au_mapping $hyp_ali \
-           > $outdir/au_phone_trans
+           > $outdir/au_phone_trans || exit 1
 
    echo "computing the equivalent Phone Error Rate"
    python utils/ter.py --no-repeat $mapping $ref_ali \

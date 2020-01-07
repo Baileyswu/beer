@@ -28,7 +28,7 @@ we have a corpus composed of a german and a french parts stored in
 a new corpora combining both of them in the following way:
 
 ```bash
-mkdir data/corpora/GE_FR
+mkdir -p data/corpora/GE_FR
 utils/add_corpus.sh --max-utts 1000 data/corpora/GE data/corpora/GE_FR
 utils/add_corpus.sh --max-utts 1000 data/corpora/FR data/corpora/GE_FR
 ```
