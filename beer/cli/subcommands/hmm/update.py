@@ -15,6 +15,7 @@ def setup(parser):
                         help='learning rate')
     parser.add_argument('-o', '--optim-state', help='optimizer state')
     parser.add_argument('model', help='model to update')
+    parser.add_argument('elbo', help='elbo path')
     parser.add_argument('out_model', help='updated model')
 
 
@@ -39,8 +40,22 @@ def main(args, logger):
     elbo = None
     nutts = 0
     count = 0
-    for line in sys.stdin:
-        path = line.strip()
+
+    if args.elbo == '-':
+        for line in sys.stdin:
+            path = line.strip()
+            logger.debug(f'loading ELBO stored in {path}')
+            with open(path, 'rb') as f:
+                elbo_batch, nutts_batch = pickle.load(f)
+            if elbo is None:
+                elbo = elbo_batch
+                nutts = nutts_batch
+            else:
+                elbo += elbo_batch
+                nutts += nutts_batch
+            count += 1
+    else:
+        path = args.elbo
         logger.debug(f'loading ELBO stored in {path}')
         with open(path, 'rb') as f:
             elbo_batch, nutts_batch = pickle.load(f)
